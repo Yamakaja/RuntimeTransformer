@@ -24,12 +24,6 @@ public class RuntimeTransformer extends JavaPlugin {
 
     private static void attachAgentToJVM() {
         try {
-            Class.forName(EntityLivingTransformer.class.getName());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        try {
             String pid = ManagementFactory.getRuntimeMXBean().getName();
             VirtualMachine vm = VirtualMachine.attach(pid.substring(0, pid.indexOf('@')));
             vm.loadAgent(new File("agent.jar").getAbsolutePath(), EntityLivingTransformer.class.getName());

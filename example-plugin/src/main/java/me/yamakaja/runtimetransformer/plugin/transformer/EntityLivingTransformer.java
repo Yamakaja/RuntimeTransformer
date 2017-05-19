@@ -13,7 +13,7 @@ import org.bukkit.Bukkit;
 @Transform(EntityLiving.class)
 public abstract class EntityLivingTransformer extends EntityLiving {
 
-    public EntityLivingTransformer(World world) {
+    private EntityLivingTransformer(World world) {
         super(world);
     }
 
