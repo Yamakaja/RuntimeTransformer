@@ -21,11 +21,10 @@ import java.util.Optional;
  */
 public class AgentJob {
 
+    private final List<MethodJob> methodJobs;
     private Class<?> transformer;
-
     private Class<?> toTransform;
     private Class<?>[] interfaces;
-    private final List<MethodJob> methodJobs;
 
     public AgentJob(Class<?> transformer) {
         this.transformer = transformer;
@@ -57,24 +56,28 @@ public class AgentJob {
 
         methodJobs = new ArrayList<>(methods.length);
 
-        Arrays.stream(methods).filter( method -> method.isAnnotationPresent(Inject.class) )
+        Arrays.stream(methods).filter(method -> method.isAnnotationPresent(Inject.class))
                 .forEach(method -> {
 
                     InjectionType type = method.getAnnotation(Inject.class).value();
 
-                    Optional<MethodNode> targetMethodNode = ((List<MethodNode>)targetNode.methods).stream()
-                            .filter(node -> node != null && method.getName().equals(node.name) && MethodUtils.getSignature(method).equals(node.desc)).findAny();
+                    String targetMethodName = method.getName().endsWith("_INJECTED") ? method.getName().substring(0, method.getName().length() - 9) : method.getName();
 
-                    Optional<MethodNode> transformerMethodNode = ((List<MethodNode>)transformerNode.methods).stream()
+                    Optional<MethodNode> targetMethodNode = ((List<MethodNode>) targetNode.methods).stream()
+                            .filter(node -> node != null && targetMethodName.equals(node.name) && MethodUtils.getSignature(method).equals(node.desc)).findAny();
+
+                    Optional<MethodNode> transformerMethodNode = ((List<MethodNode>) transformerNode.methods).stream()
                             .filter(node -> node != null && method.getName().equals(node.name) && MethodUtils.getSignature(method).equals(node.desc)).findAny();
 
                     if (!transformerMethodNode.isPresent())
                         throw new RuntimeException("Transformer method node not found!");
 
                     if (targetMethodNode.isPresent())
-                        methodJobs.add(new MethodJob(type, targetMethodNode.get(), transformerMethodNode.get()));
+                        methodJobs.add(new MethodJob(type, toTransform.getName().replace('.', '/'),
+                                transformer.getName().replace('.', '/'), targetMethodNode.get(), transformerMethodNode.get()));
                     else
-                        methodJobs.add(new MethodJob(type, transformerMethodNode.get()));
+                        methodJobs.add(new MethodJob(type, toTransform.getName().replace('.', '/'),
+                                transformer.getName().replace('.', '/'), transformerMethodNode.get()));
 
                 });
 
