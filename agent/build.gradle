@@ -1,0 +1,25 @@
+apply plugin: 'java'
+
+dependencies {
+    compile "org.ow2.asm:asm-all:5.2"
+}
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
+    manifest {
+        attributes(
+                "Agent-Class": "me.yamakaja.runtimetransformer.agent.Agent",
+                "Can-Retransform-Classes": "true",
+                "Can-Redefine-Classes": "true"
+        )
+    }
+}

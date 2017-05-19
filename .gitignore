@@ -1,0 +1,16 @@
+# Vim
+.*swp
+*~
+
+# IntelliJ
+out/
+*.iml
+.idea/
+
+# Gradle
+build/
+.gradle/
+
+# Test Server stuff
+testenv/
+

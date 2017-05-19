@@ -1,0 +1,8 @@
+rootProject.name = 'runtimetransformer'
+
+include 'plugin'
+project(":plugin").projectDir = "$rootDir/plugin" as File
+
+include 'agent'
+project(":agent").projectDir = "$rootDir/agent" as File
+

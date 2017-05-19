@@ -1,0 +1,21 @@
+apply plugin: 'java'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+}
+
+dependencies {
+    compileOnly "org.spigotmc:spigot-api:1.11.2-R0.1-SNAPSHOT"
+    compile files("${System.properties['java.home']}/../lib/tools.jar")
+}
+
+jar {
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}

@@ -1,0 +1,4 @@
+name: RuntimeTransformer
+main: me.yamakaja.runtimetransformer.plugin.RuntimeTransformer
+author: Yamakaja
+version: 0.0.1

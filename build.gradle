@@ -1,0 +1,17 @@
+group 'me.yamakaja.runtimetransformer'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+task installAgent(type: Copy) {
+    from("$rootDir/agent/build/libs/agent.jar")
+    into "$rootDir/testenv"
+}
+
+task install(type: Copy) {
+    from("$rootDir/plugin/build/libs/plugin.jar")
+    into "$rootDir/testenv/plugins"
+    installAgent.execute()
+}
