@@ -1,4 +1,5 @@
 apply plugin: 'java'
+sourceCompatibility = 1.8
 
 dependencies {
     compile "org.ow2.asm:asm-all:5.2"

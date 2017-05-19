@@ -1,46 +1,47 @@
 package me.yamakaja.runtimetransformer.agent;
 
+import me.yamakaja.runtimetransformer.transform.ClassTransformer;
+
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Yamakaja on 19.05.17.
  */
 public class Agent {
 
-    private static Pattern pattern = Pattern.compile("net\\.minecraft\\.server\\.(v[\\d_R]*)\\.EntityLiving");
+    private static Agent instance;
+
+    private Instrumentation instrumentation;
+
+    private Agent(Instrumentation inst){
+        this.instrumentation = inst;
+    }
 
     public static void agentmain(String agentArgument, Instrumentation instrumentation) {
+        instance = new Agent(instrumentation);
+    }
 
-        instrumentation.addTransformer(new EntityClassFileTransformer(), true);
+    public static Agent getInstance() {
+        return instance;
+    }
 
-        String version = null;
-        Class<?> resultClass = null;
+    public void process(Class<?> ... transformerClasses) {
+        List<AgentJob> agentJobs = new ArrayList<>();
 
-        for (Class<?> clazz : instrumentation.getAllLoadedClasses()) {
-            if (pattern.matcher(clazz.getName()).matches()) {
-                Matcher matcher = pattern.matcher(clazz.getName());
-                matcher.find();
-                version = matcher.group(1);
-                resultClass = clazz;
-                break;
-            }
-        }
+        for (Class<?> clazz : transformerClasses)
+            agentJobs.add(new AgentJob(clazz));
 
-        if (version == null) {
-            throw new RuntimeException("No version of EntityLiving could be found!");
-        }
-
-        System.out.println("Determined version: " + version);
+        ClassTransformer classTransformer = new ClassTransformer(agentJobs);
+        instrumentation.addTransformer(classTransformer, true);
 
         try {
-            instrumentation.retransformClasses(resultClass);
+            instrumentation.retransformClasses(classTransformer.getClassesToTransform());
         } catch (UnmodifiableClassException e) {
             e.printStackTrace();
         }
-
     }
 
 }

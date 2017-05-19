@@ -1,6 +1,8 @@
 group 'me.yamakaja.runtimetransformer'
 version '1.0-SNAPSHOT'
 
+apply plugin: 'base'
+
 repositories {
     mavenCentral()
 }
@@ -10,8 +12,12 @@ task installAgent(type: Copy) {
     into "$rootDir/testenv"
 }
 
-task install(type: Copy) {
+task installPlugin(type: Copy) {
     from("$rootDir/plugin/build/libs/plugin.jar")
     into "$rootDir/testenv/plugins"
-    installAgent.execute()
+    rename { "RuntimeTransformer.jar" }
+}
+
+clean.doFirst {
+    delete("$rootDir/testenv/agent.jar", "$rootDir/testenv/plugins/RuntimeTransformer.jar")
 }

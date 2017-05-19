@@ -8,8 +8,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly "org.spigotmc:spigot-api:1.11.2-R0.1-SNAPSHOT"
+    compileOnly "org.spigotmc:spigot:1.11.2-R0.1-SNAPSHOT"
     compile files("${System.properties['java.home']}/../lib/tools.jar")
+    compileOnly project(":agent")
 }
 
 jar {
