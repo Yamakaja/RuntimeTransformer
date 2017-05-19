@@ -13,7 +13,7 @@ task installAgent(type: Copy) {
 }
 
 task installPlugin(type: Copy) {
-    from("$rootDir/plugin/build/libs/plugin.jar")
+    from("$rootDir/example-plugin/build/libs/example-plugin.jar")
     into "$rootDir/testenv/plugins"
     rename { "RuntimeTransformer.jar" }
 }

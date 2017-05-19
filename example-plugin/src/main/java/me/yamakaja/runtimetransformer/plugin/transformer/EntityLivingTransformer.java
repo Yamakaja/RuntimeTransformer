@@ -19,7 +19,7 @@ public abstract class EntityLivingTransformer extends EntityLiving {
 
     @Inject(InjectionType.INSERT)
     public void setHealth(float f) {
-        Bukkit.broadcastMessage(super.getName() + " (" + f + ")");
+        Bukkit.broadcastMessage(super.getName() + ": " + super.getHealth() + " -> " + f);
     }
 
 }

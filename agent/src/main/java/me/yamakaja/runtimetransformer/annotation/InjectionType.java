@@ -6,5 +6,5 @@ package me.yamakaja.runtimetransformer.annotation;
 public enum InjectionType {
     INSERT,
     OVERRIDE,
-    APPEND;
+    APPEND
 }
