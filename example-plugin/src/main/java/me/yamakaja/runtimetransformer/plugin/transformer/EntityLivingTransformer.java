@@ -32,6 +32,11 @@ public abstract class EntityLivingTransformer extends EntityLiving {
         // because the superclass of EntityLiving, Entity, doesn't have a getHealth method
     }
 
+    @Inject(InjectionType.APPEND)
+    public void setHealth_INJECTED(float f) {
+        Bukkit.broadcastMessage("Finished setting health");
+    }
+
     // Overriding a final method
     @Inject(InjectionType.INSERT)
     public final float getMaxHealth_INJECTED() {

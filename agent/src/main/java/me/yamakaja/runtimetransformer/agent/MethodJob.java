@@ -12,7 +12,6 @@ import java.util.Iterator;
 public class MethodJob {
 
     private InjectionType type;
-    private MethodNode targetNode;
     private MethodNode transformerNode;
     private MethodNode resultNode;
 
@@ -27,16 +26,9 @@ public class MethodJob {
         this.transformer = transformer;
         this.superClass = superClass;
 
-        transformerNode.name = transformerNode.name.endsWith("_INJECTED") ? transformerNode.name.substring(0, transformerNode.name.length() - 9) : transformerNode.name;
-    }
-
-    public MethodJob(InjectionType type, String owner, String transformer, String superClass, MethodNode targetNode, MethodNode transformerNode) {
-        this(type, owner, transformer, superClass, transformerNode);
-        this.targetNode = targetNode;
-    }
-
-    public boolean hasTarget() {
-        return targetNode != null;
+        transformerNode.name = transformerNode.name.endsWith("_INJECTED")
+                ? transformerNode.name.substring(0, transformerNode.name.length() - 9)
+                : transformerNode.name;
     }
 
     public void process() {
@@ -85,8 +77,25 @@ public class MethodJob {
     }
 
     private void append() {
-        targetNode.instructions.add(transformerNode.instructions);
-        resultNode = targetNode;
+        if (!this.resultNode.desc.endsWith("V"))
+            throw new RuntimeException("Can't append to non-void method!");
+
+        InsnList list = resultNode.instructions;
+
+        AbstractInsnNode node = list.getLast();
+
+        if (node instanceof LabelNode) {
+            node = node.getPrevious();
+        }
+
+        if (!(node.getOpcode() == Opcodes.RETURN))
+            throw new RuntimeException("Method " + this.resultNode.name + " in " + this.owner + " doesn't end with return opcode?!");
+
+        list.remove(node);
+
+        list.add(transformerNode.instructions);
+
+        resultNode.instructions.add(transformerNode.instructions);
     }
 
     private void insert() {
@@ -112,9 +121,7 @@ public class MethodJob {
             break;
         }
 
-        targetNode.instructions.insert(trInsns);
-
-        resultNode = targetNode;
+        resultNode.instructions.insert(trInsns);
     }
 
     private void override() {
@@ -127,14 +134,18 @@ public class MethodJob {
 
     public void apply(ClassNode node) {
         for (int i = 0; i < node.methods.size(); i++) {
-            if (!(((MethodNode) node.methods.get(i)).name.equals(resultNode.name) &&
-                    ((MethodNode) node.methods.get(i)).desc.equals(resultNode.desc)))
+            if (!(transformerNode.name.equals(((MethodNode) node.methods.get(i)).name)
+                    && transformerNode.desc.equals(((MethodNode) node.methods.get(i)).desc)))
                 continue;
+
+            resultNode = ((MethodNode) node.methods.get(i));
+
+            process();
 
             node.methods.set(i, getResultNode());
             return;
         }
 
-        System.err.println(transformer + " tried to add a method to " + owner + ". This is not supported!");
+        throw new RuntimeException("Target method node not found! Transformer: " + transformer);
     }
 }

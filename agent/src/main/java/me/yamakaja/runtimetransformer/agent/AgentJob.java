@@ -63,29 +63,20 @@ public class AgentJob {
 
                     String targetMethodName = method.getName().endsWith("_INJECTED") ? method.getName().substring(0, method.getName().length() - 9) : method.getName();
 
-                    Optional<MethodNode> targetMethodNode = ((List<MethodNode>) targetNode.methods).stream()
-                            .filter(node -> node != null && targetMethodName.equals(node.name) && MethodUtils.getSignature(method).equals(node.desc)).findAny();
-
                     Optional<MethodNode> transformerMethodNode = ((List<MethodNode>) transformerNode.methods).stream()
                             .filter(node -> node != null && method.getName().equals(node.name) && MethodUtils.getSignature(method).equals(node.desc)).findAny();
 
                     if (!transformerMethodNode.isPresent())
-                        throw new RuntimeException("Transformer method node not found!");
+                        throw new RuntimeException("Transformer method node not found! (WTF?)");
 
-                    if (targetMethodNode.isPresent())
-                        methodJobs.add(new MethodJob(type, toTransform.getName().replace('.', '/'),
-                                transformer.getName().replace('.', '/'),
-                                toTransform.getSuperclass().getName().replace('.', '/'),
-                                targetMethodNode.get(), transformerMethodNode.get()));
-                    else
-                        methodJobs.add(new MethodJob(type, toTransform.getName().replace('.', '/'),
-                                transformer.getName().replace('.', '/'),
-                                toTransform.getSuperclass().getName().replace('.', '/'),
-                                transformerMethodNode.get()));
+
+
+                    methodJobs.add(new MethodJob(type, toTransform.getName().replace('.', '/'),
+                            transformer.getName().replace('.', '/'),
+                            toTransform.getSuperclass().getName().replace('.', '/'),
+                            transformerMethodNode.get()));
 
                 });
-
-        methodJobs.forEach(MethodJob::process);
     }
 
     public List<MethodJob> getMethodJobs() {
