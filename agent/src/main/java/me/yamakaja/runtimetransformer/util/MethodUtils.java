@@ -51,7 +51,7 @@ public class MethodUtils {
             case "void":
                 return "V";
             default:
-                return "L" + type.getName() + ";";
+                return "L" + type.getName().replace('.','/') + ";";
         }
     }
 

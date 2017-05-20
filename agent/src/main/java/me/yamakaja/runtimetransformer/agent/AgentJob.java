@@ -52,7 +52,7 @@ public class AgentJob {
         targetReader.accept(targetNode, 0);
         transformerReader.accept(transformerNode, 0);
 
-        Method[] methods = transformer.getMethods();
+        Method[] methods = transformer.getDeclaredMethods();
 
         methodJobs = new ArrayList<>(methods.length);
 
@@ -74,10 +74,14 @@ public class AgentJob {
 
                     if (targetMethodNode.isPresent())
                         methodJobs.add(new MethodJob(type, toTransform.getName().replace('.', '/'),
-                                transformer.getName().replace('.', '/'), targetMethodNode.get(), transformerMethodNode.get()));
+                                transformer.getName().replace('.', '/'),
+                                toTransform.getSuperclass().getName().replace('.', '/'),
+                                targetMethodNode.get(), transformerMethodNode.get()));
                     else
                         methodJobs.add(new MethodJob(type, toTransform.getName().replace('.', '/'),
-                                transformer.getName().replace('.', '/'), transformerMethodNode.get()));
+                                transformer.getName().replace('.', '/'),
+                                toTransform.getSuperclass().getName().replace('.', '/'),
+                                transformerMethodNode.get()));
 
                 });
 
