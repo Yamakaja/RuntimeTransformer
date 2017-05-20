@@ -7,7 +7,7 @@ Note, this method comes with disadvantages, for example method modifiers may not
 ## Usage
 
 Lets assume we want to inject an event handler into the `setHealth` method of `EntityLiving`,
-therefore our method should something like this after transformation:
+therefore the method should something like this after transformation:
 
 ```java
 public void setHealth(float newHealth) {
