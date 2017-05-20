@@ -13,7 +13,7 @@ public class CraftServerTransformer {
 
     @Inject(InjectionType.OVERRIDE)
     public String getVersion() {
-        return "TEST VERSION";
+        return "42 (Minecraft 2.0)";
     }
 
 }

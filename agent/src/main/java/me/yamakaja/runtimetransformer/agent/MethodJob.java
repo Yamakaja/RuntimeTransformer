@@ -120,12 +120,14 @@ public class MethodJob {
 
     public void apply(ClassNode node) {
         for (int i = 0; i < node.methods.size(); i++) {
-            if (!(((MethodNode) node.methods.get(i)).name.equals(targetNode.name) &&
-                    ((MethodNode) node.methods.get(i)).desc.equals(targetNode.desc)))
+            if (!(((MethodNode) node.methods.get(i)).name.equals(resultNode.name) &&
+                    ((MethodNode) node.methods.get(i)).desc.equals(resultNode.desc)))
                 continue;
 
             node.methods.set(i, getResultNode());
+            return;
         }
 
+        System.err.println(transformer + " tried to add a method to " + owner + ". This is not supported!");
     }
 }

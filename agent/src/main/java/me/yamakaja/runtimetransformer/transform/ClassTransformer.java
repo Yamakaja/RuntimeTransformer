@@ -45,10 +45,8 @@ public class ClassTransformer implements ClassFileTransformer {
                     .filter(job -> job.getToTransform().getName().replace('.', '/').equals(className))
                     .collect(Collectors.toList());
 
-            for (AgentJob job : localJobs) {
+            for (AgentJob job : localJobs)
                 job.apply(node);
-                Collections.addAll(node.interfaces, job.getInterfaces());
-            }
 
             writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
             node.accept(writer);
