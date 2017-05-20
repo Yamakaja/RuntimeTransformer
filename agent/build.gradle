@@ -17,3 +17,17 @@ jar {
         )
     }
 }
+
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId 'me.yamakaja.runtimetransformer'
+            artifactId 'agent'
+            version  project.getParent().getVersion()
+
+            from components.java
+        }
+    }
+}

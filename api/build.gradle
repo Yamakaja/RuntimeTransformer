@@ -19,7 +19,7 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId 'me.yamakaja.runtimetransformer'
-            artifactId 'runtimetransformer'
+            artifactId 'api'
             version  project.getParent().getVersion()
 
             from components.java
