@@ -4,7 +4,6 @@ import me.yamakaja.runtimetransformer.annotation.Inject;
 import me.yamakaja.runtimetransformer.annotation.InjectionType;
 import me.yamakaja.runtimetransformer.annotation.Transform;
 import net.minecraft.server.v1_11_R1.DamageSource;
-import net.minecraft.server.v1_11_R1.Entity;
 import net.minecraft.server.v1_11_R1.EntityLiving;
 import net.minecraft.server.v1_11_R1.World;
 import org.bukkit.Bukkit;
@@ -22,7 +21,7 @@ public abstract class EntityLivingTransformer extends EntityLiving {
     // Injecting into a private method
     @Inject(InjectionType.INSERT)
     private boolean d(DamageSource src) {
-        Bukkit.broadcastMessage("Checked " + this.getName() + " for totem!");
+        Bukkit.broadcastMessage("Checked " + this.getName() + " for totem @ " + (int) this.locX + ", " + (int) this.locY + ", " + (int) this.locZ + "!");
         throw null; // Let original method continue execution
     }
 

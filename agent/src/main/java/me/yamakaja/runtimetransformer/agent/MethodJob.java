@@ -74,6 +74,13 @@ public class MethodJob {
 
             }
 
+            if (insn instanceof FieldInsnNode) {
+                FieldInsnNode fieldInsn = (FieldInsnNode) insn;
+
+                if (fieldInsn.owner.equals(transformer))
+                    fieldInsn.owner = this.owner;
+            }
+
         }
     }
 
