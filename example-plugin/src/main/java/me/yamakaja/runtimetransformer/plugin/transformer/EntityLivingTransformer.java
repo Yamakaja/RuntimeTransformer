@@ -19,7 +19,7 @@ public abstract class EntityLivingTransformer extends EntityLiving {
     }
 
     @Inject(InjectionType.INSERT)
-    private void _init_(World world) {
+    public void _init_(World world) {
         Bukkit.broadcastMessage("Entity created!");
         throw null;
     }
