@@ -37,7 +37,7 @@ public class EntityLivingTransformer extends EntityLiving { // Extending EntityL
             
         newHealth = event.getNewHealth();
         
-        throw null; // Pass execution on to the rest of the method. This will be removed at runtime but is required for compilation
+        throw null; // Pass execution on to the rest of the method. This will be removed at runtime but is required for compilation (At least when the method doesn't return void, so it's not necessary in this case)
         
     }
     
