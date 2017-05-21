@@ -29,6 +29,8 @@ public class MethodJob {
         transformerNode.name = transformerNode.name.endsWith("_INJECTED")
                 ? transformerNode.name.substring(0, transformerNode.name.length() - 9)
                 : transformerNode.name;
+
+        transformerNode.name = transformerNode.name.equals("_init_") ? "<init>" : transformerNode.name;
     }
 
     public void process() {

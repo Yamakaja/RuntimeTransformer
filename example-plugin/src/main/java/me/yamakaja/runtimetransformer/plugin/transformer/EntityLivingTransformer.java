@@ -18,6 +18,12 @@ public abstract class EntityLivingTransformer extends EntityLiving {
         super(world);
     }
 
+    @Inject(InjectionType.INSERT)
+    private void _init_(World world) {
+        Bukkit.broadcastMessage("Entity created!");
+        throw null;
+    }
+
     // Injecting into a private method
     @Inject(InjectionType.INSERT)
     private boolean d(DamageSource src) {
