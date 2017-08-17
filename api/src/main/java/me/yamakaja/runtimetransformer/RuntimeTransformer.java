@@ -4,10 +4,15 @@ import com.sun.tools.attach.AgentInitializationException;
 import com.sun.tools.attach.AgentLoadException;
 import com.sun.tools.attach.AttachNotSupportedException;
 import com.sun.tools.attach.VirtualMachine;
-import me.yamakaja.runtimetransformer.agent.Agent;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
+
+import me.yamakaja.runtimetransformer.agent.Agent;
 
 /**
  * Created by Yamakaja on 19.05.17.
@@ -31,7 +36,6 @@ public class RuntimeTransformer {
                 vm.detach();
 
                 Agent.getInstance().process(transformers);
-
             } catch (AttachNotSupportedException | IOException | AgentLoadException | AgentInitializationException e) {
                 e.printStackTrace();
             }
@@ -39,24 +43,37 @@ public class RuntimeTransformer {
 
     private File saveAgentJar() {
         File agentFile = null;
+
+        OutputStream out = null;
+        InputStream in = null;
         try {
             agentFile = File.createTempFile("agent", ".jar");
             agentFile.deleteOnExit();
 
-            OutputStream writer = new FileOutputStream(agentFile);
-            InputStream reader = RuntimeTransformer.class.getResourceAsStream("/agent.jar");
+            out = new FileOutputStream(agentFile);
+            in = RuntimeTransformer.class.getResourceAsStream("/agent.jar");
 
             byte[] buffer = new byte[1024];
             int count;
 
-            while ((count = reader.read(buffer)) > 0)
-                writer.write(buffer, 0, count);
-
-            writer.close();
-            reader.close();
+            while ((count = in.read(buffer)) > 0)
+                out.write(buffer, 0, count);
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {}
+            }
+
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {}
+            }
         }
+
         return agentFile;
     }
 }
