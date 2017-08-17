@@ -4,6 +4,23 @@ A tool allowing for easy class modification at runtime, when using a normal java
 Note, this method comes with disadvantages, for example method modifiers may not be altered, new methods can not be created and neither can class inheritance be changed.
 
 
+## Maven repository
+
+```xml
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+```
+
+```xml
+	<dependency>
+	    <groupId>com.github.Yamakaja.RuntimeTransformer</groupId>
+	    <artifactId>api</artifactId>
+	    <version>master-SNAPSHOT</version>
+	</dependency>
+```
+
 ## Usage
 
 Lets assume we want to inject an event handler into the `setHealth` method of `EntityLiving`,
@@ -61,3 +78,11 @@ There are three types of Injection:
 - INSERT (Inserts your code at the beginning of the method)
 - OVERWRITE (Overwrites the method with your code)
 - APPEND (Adds code to the end of the method, only works on methods returning void)
+
+## Compiling
+
+Run this command to build the api project.
+`gradlew jar`
+
+If you want to build the example project add `-Pbuild-example`
+`gradlew jar -Pbuild-example`

@@ -1,7 +1,9 @@
 rootProject.name = 'runtimetransformer'
 
-include 'example-plugin'
-project(":example-plugin").projectDir = "$rootDir/example-plugin" as File
+if(hasProperty("build-example")){
+  include 'example-plugin'
+  project(":example-plugin").projectDir = "$rootDir/example-plugin" as File
+}
 
 include 'agent'
 project(":agent").projectDir = "$rootDir/agent" as File
