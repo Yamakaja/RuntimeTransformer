@@ -7,18 +7,18 @@ Note, this method comes with disadvantages, for example method modifiers may not
 ## Maven repository
 
 ```xml
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
+<repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+</repository>
 ```
 
 ```xml
-	<dependency>
-	    <groupId>com.github.Yamakaja.RuntimeTransformer</groupId>
-	    <artifactId>api</artifactId>
-	    <version>master-SNAPSHOT</version>
-	</dependency>
+<dependency>
+    <groupId>com.github.Yamakaja.RuntimeTransformer</groupId>
+    <artifactId>api</artifactId>
+    <version>master-SNAPSHOT</version>
+</dependency>
 ```
 
 ## Usage
