@@ -5,6 +5,8 @@ Note, this method comes with disadvantages, for example method modifiers may not
 
 ## Usage
 
+To install the artifact into your local maven repo execute the correct gradle wrapper with the "publishToMavenLocal" task, that is ```gradlew.bat publishToMavenLocal``` under Windows, and ```./gradlew publishToMavenLocal``` under *nix;
+
 Lets assume we want to inject an event handler into the `setHealth` method of `EntityLiving`,
 therefore the method should something like this after transformation:
 
