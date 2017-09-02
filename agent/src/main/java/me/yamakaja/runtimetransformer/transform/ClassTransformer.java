@@ -40,12 +40,9 @@ public class ClassTransformer implements ClassFileTransformer {
             ClassNode node = new ClassNode(Opcodes.ASM5);
             reader.accept(node, 0);
 
-            List<AgentJob> localJobs = agentJobs.stream()
+            agentJobs.stream()
                     .filter(job -> job.getToTransform().getName().replace('.', '/').equals(className))
-                    .collect(Collectors.toList());
-
-            for (AgentJob job : localJobs)
-                job.apply(node);
+                    .forEach(job -> job.apply(node));
 
             writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES) {
                 @Override
