@@ -3,25 +3,9 @@
 A tool allowing for easy class modification at runtime, when using a normal javaagent at startup would be too inconvenient.
 Note, this method comes with disadvantages, for example method modifiers may not be altered, new methods can not be created and neither can class inheritance be changed.
 
-
-## Maven repository
-
-```xml
-<repository>
-    <id>jitpack.io</id>
-    <url>https://jitpack.io</url>
-</repository>
-```
-
-```xml
-<dependency>
-    <groupId>com.github.Yamakaja.RuntimeTransformer</groupId>
-    <artifactId>api</artifactId>
-    <version>master-SNAPSHOT</version>
-</dependency>
-```
-
 ## Usage
+
+To install the artifact into your local maven repo execute the correct gradle wrapper with the "publishToMavenLocal" task, that is ```gradlew.bat publishToMavenLocal``` under Windows, and ```./gradlew publishToMavenLocal``` under *nix;
 
 Lets assume we want to inject an event handler into the `setHealth` method of `EntityLiving`,
 therefore the method should something like this after transformation:
