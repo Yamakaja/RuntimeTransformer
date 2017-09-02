@@ -29,10 +29,6 @@ public class AgentJob {
     public AgentJob(Class<?> transformer) {
         this.transformer = transformer;
         interfaces = transformer.getInterfaces();
-//
-//        Class<?> superClass = transformer.getSuperclass();
-//        while (superClass != Object.class)
-//            superClass = superClass.getSuperclass();
 
         if (!transformer.isAnnotationPresent(Transform.class))
             throw new RuntimeException("Transform annotation not present on transformer!");

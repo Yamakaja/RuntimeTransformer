@@ -33,7 +33,6 @@ public class ClassTransformer implements ClassFileTransformer {
         if (!classesToRedefine.contains(classBeingRedefined))
             return classfileBuffer;
 
-
         ClassWriter writer;
         try {
             ClassReader reader = new ClassReader(classfileBuffer);
