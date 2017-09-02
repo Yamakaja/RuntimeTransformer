@@ -33,7 +33,6 @@ public class ClassTransformer implements ClassFileTransformer {
         if (!classesToRedefine.contains(classBeingRedefined))
             return classfileBuffer;
 
-
         ClassWriter writer;
         try {
             ClassReader reader = new ClassReader(classfileBuffer);
@@ -48,10 +47,35 @@ public class ClassTransformer implements ClassFileTransformer {
             for (AgentJob job : localJobs)
                 job.apply(node);
 
-            writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+            writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES) {
+                @Override
+                protected String getCommonSuperClass(String type1, String type2) {
+                    Class<?> c, d;
+                    try {
+                        c = Class.forName(type1.replace('/', '.'), false, loader);
+                        d = Class.forName(type2.replace('/', '.'), false, loader);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e.toString());
+                    }
+                    if (c.isAssignableFrom(d)) {
+                        return type1;
+                    }
+                    if (d.isAssignableFrom(c)) {
+                        return type2;
+                    }
+                    if (c.isInterface() || d.isInterface()) {
+                        return "java/lang/Object";
+                    } else {
+                        do {
+                            c = c.getSuperclass();
+                        } while (!c.isAssignableFrom(d));
+
+                        return c.getName().replace('.', '/');
+                    }
+                }
+            };
+
             node.accept(writer);
-
-
         } catch (Throwable e) {
             e.printStackTrace();
             throw new RuntimeException(e);

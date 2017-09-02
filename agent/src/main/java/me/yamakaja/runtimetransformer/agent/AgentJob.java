@@ -36,20 +36,15 @@ public class AgentJob {
         Transform transform = transformer.getAnnotation(Transform.class);
         toTransform = transform.value();
 
-        ClassNode targetNode = new ClassNode(Opcodes.ASM5);
-        ClassReader targetReader;
-
         ClassNode transformerNode = new ClassNode(Opcodes.ASM5);
         ClassReader transformerReader;
 
         try {
-            targetReader = new ClassReader(toTransform.getResource(toTransform.getSimpleName() + ".class").openStream());
             transformerReader = new ClassReader(transformer.getResource(transformer.getSimpleName() + ".class").openStream());
         } catch (IOException e) {
             throw new RuntimeException("Failed to load class file of " + toTransform.getSimpleName(), e);
         }
 
-        targetReader.accept(targetNode, 0);
         transformerReader.accept(transformerNode, 0);
 
         Method[] methods = transformer.getDeclaredMethods();
@@ -61,15 +56,11 @@ public class AgentJob {
 
                     InjectionType type = method.getAnnotation(Inject.class).value();
 
-                    String targetMethodName = method.getName().endsWith("_INJECTED") ? method.getName().substring(0, method.getName().length() - 9) : method.getName();
-
                     Optional<MethodNode> transformerMethodNode = ((List<MethodNode>) transformerNode.methods).stream()
                             .filter(node -> node != null && method.getName().equals(node.name) && MethodUtils.getSignature(method).equals(node.desc)).findAny();
 
                     if (!transformerMethodNode.isPresent())
                         throw new RuntimeException("Transformer method node not found! (WTF?)");
-
-
 
                     methodJobs.add(new MethodJob(type, toTransform.getName().replace('.', '/'),
                             transformer.getName().replace('.', '/'),
