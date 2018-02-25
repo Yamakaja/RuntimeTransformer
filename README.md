@@ -66,7 +66,24 @@ There are three types of Injection:
 ## Compiling
 
 Run this command to build the api project.
-`gradlew jar`
+`./gradlew jar`
 
 If you want to build the example project add `-Pbuild-example`
-`gradlew jar -Pbuild-example`
+`./gradlew jar -Pbuild-example`
+
+## Installation
+
+To install the api jar into your local maven repo run
+`./gradlew publishToMavenLocal`
+
+The correct artifact can then be included using the following dependency definition:
+```xml
+    <dependency>
+        <groupId>me.yamakaja.runtimetransformer</groupId>
+        <artifactId>api</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+```
+
+Don't forget to actually include the artifact in your final jar, using the `maven-shade-plugin` or an equivalent alternative!
+
