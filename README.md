@@ -29,7 +29,7 @@ To get there, we first need to define a transformer, this should optimally be in
 @Transform(EntityLiving.class) // The class we want to transform
 public class EntityLivingTransformer extends EntityLiving { // Extending EntityLiving in our transformer makes things easier, but isn't required (Which, for example, allows you to transform final classes)
     
-    @Inject(TransformationType.INSERT) // Our goal is to insert code at the beginning of the method, and leave everything else intact
+    @Inject(InjectionType.INSERT) // Our goal is to insert code at the beginning of the method, and leave everything else intact
     public void setHealth(float newHealth) { // Then just "override" the method as usual, if it is final add an _INJECTED to the method name
         ImaginaryEvent event = ImaginaryEventBus.callEvent(new ImaginaryEvent(this, newHealth)); // Our event handling code from above
             
