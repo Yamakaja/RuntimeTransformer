@@ -2,3 +2,5 @@ name: RuntimeTransformer
 main: me.yamakaja.runtimetransformer.plugin.ExampleTransformationPlugin
 author: Yamakaja
 version: 0.0.1
+commands:
+  debugtest: {}

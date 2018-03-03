@@ -3,6 +3,7 @@ package me.yamakaja.runtimetransformer.agent;
 import me.yamakaja.runtimetransformer.annotation.Inject;
 import me.yamakaja.runtimetransformer.annotation.InjectionType;
 import me.yamakaja.runtimetransformer.annotation.Transform;
+import me.yamakaja.runtimetransformer.annotation.TransformByName;
 import me.yamakaja.runtimetransformer.util.MethodUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
@@ -30,11 +31,7 @@ public class AgentJob {
         this.transformer = transformer;
         interfaces = transformer.getInterfaces();
 
-        if (!transformer.isAnnotationPresent(Transform.class))
-            throw new RuntimeException("Transform annotation not present on transformer!");
-
-        Transform transform = transformer.getAnnotation(Transform.class);
-        toTransform = transform.value();
+        this.readTransformationTarget(transformer);
 
         ClassNode transformerNode = new ClassNode(Opcodes.ASM5);
         ClassReader transformerReader;
@@ -68,6 +65,23 @@ public class AgentJob {
                             transformerMethodNode.get()));
 
                 });
+    }
+
+    private void readTransformationTarget(Class<?> transformer) {
+        if (transformer.isAnnotationPresent(Transform.class)) {
+            this.toTransform = transformer.getAnnotation(Transform.class).value();
+            return;
+        }
+
+        if (transformer.isAnnotationPresent(TransformByName.class))
+            try {
+                this.toTransform = Class.forName(transformer.getAnnotation(TransformByName.class).value(), true, transformer.getClassLoader());
+                return;
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("Failed to transform class: ", e);
+            }
+
+        throw new RuntimeException("No transformation annotation present on transformer: " + transformer.getName());
     }
 
     public List<MethodJob> getMethodJobs() {
