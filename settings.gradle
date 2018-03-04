@@ -1,6 +1,6 @@
 rootProject.name = 'runtimetransformer'
 
-if (hasProperty("build-example")) {
+if (hasProperty("build-example") || System.getProperty("build-example") != null) {
     include 'example-plugin'
     project(":example-plugin").projectDir = "$rootDir/example-plugin" as File
 }

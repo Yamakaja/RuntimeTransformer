@@ -78,12 +78,23 @@ To install the api jar into your local maven repo run
 
 The correct artifact can then be included using the following dependency definition:
 ```xml
-    <dependency>
-        <groupId>me.yamakaja.runtimetransformer</groupId>
-        <artifactId>api</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </dependency>
+        <dependency>
+            <groupId>me.yamakaja.runtimetransformer</groupId>
+            <artifactId>api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 ```
 
 Don't forget to actually include the artifact in your final jar, using the `maven-shade-plugin` or an equivalent alternative!
 
+## Alternative: Maven repository
+
+@sgdc3 has offered to host the artifacts on their build server, you can access them by adding the following to your
+`<repositories>` (This way you wont have to compile it locally):
+
+```xml
+        <repository>
+            <id>codemc</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+        </repository>
+```

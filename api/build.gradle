@@ -1,6 +1,6 @@
 dependencies {
     compileOnly project(":agent")
-    compile files("${System.properties['java.home']}/../lib/tools.jar")
+    compileOnly files("${System.properties['java.home']}/../lib/tools.jar")
 }
 
 jar {
