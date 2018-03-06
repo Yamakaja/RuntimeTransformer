@@ -49,16 +49,7 @@ public class ClassTransformer implements ClassFileTransformer {
             throw new RuntimeException(e);
         }
 
-        byte[] data = writer.toByteArray();
-
-//        File outputFile = new File("dump/" + className.replace('/', '.') + ".class");
-//
-//        try (OutputStream stream = new FileOutputStream(outputFile)) {
-//            stream.write(data);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        return data;
+        return writer.toByteArray();
     }
 
     public Class<?>[] getClassesToTransform() {

@@ -96,12 +96,6 @@ public class ClassFactory {
 
         byte[] data = writer.toByteArray();
 
-        try (OutputStream stream = new FileOutputStream(new File("dump/" + node.name.replace('/', '.') + ".class"))) {
-            stream.write(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         try {
             return (Class<?>) classLoaderDefineClass.invoke(targetClassLoader, node.name.replace('/', '.'), data, 0, data.length);
         } catch (IllegalAccessException | InvocationTargetException e) {
