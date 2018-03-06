@@ -2,15 +2,12 @@ package me.yamakaja.runtimetransformer.transform;
 
 import me.yamakaja.runtimetransformer.agent.AgentJob;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
@@ -40,37 +37,11 @@ public class ClassTransformer implements ClassFileTransformer {
             ClassNode node = new ClassNode(Opcodes.ASM5);
             reader.accept(node, 0);
 
-            agentJobs.stream()
+            this.agentJobs.stream()
                     .filter(job -> job.getToTransform().getName().replace('.', '/').equals(className))
                     .forEach(job -> job.apply(node));
 
-            writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES) {
-                @Override
-                protected String getCommonSuperClass(String type1, String type2) {
-                    Class<?> c, d;
-                    try {
-                        c = Class.forName(type1.replace('/', '.'), false, loader);
-                        d = Class.forName(type2.replace('/', '.'), false, loader);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e.toString());
-                    }
-                    if (c.isAssignableFrom(d)) {
-                        return type1;
-                    }
-                    if (d.isAssignableFrom(c)) {
-                        return type2;
-                    }
-                    if (c.isInterface() || d.isInterface()) {
-                        return "java/lang/Object";
-                    } else {
-                        do {
-                            c = c.getSuperclass();
-                        } while (!c.isAssignableFrom(d));
-
-                        return c.getName().replace('.', '/');
-                    }
-                }
-            };
+            writer = new FixedClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES, loader);
 
             node.accept(writer);
         } catch (Throwable e) {
@@ -78,7 +49,16 @@ public class ClassTransformer implements ClassFileTransformer {
             throw new RuntimeException(e);
         }
 
-        return writer.toByteArray();
+        byte[] data = writer.toByteArray();
+
+//        File outputFile = new File("dump/" + className.replace('/', '.') + ".class");
+//
+//        try (OutputStream stream = new FileOutputStream(outputFile)) {
+//            stream.write(data);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        return data;
     }
 
     public Class<?>[] getClassesToTransform() {

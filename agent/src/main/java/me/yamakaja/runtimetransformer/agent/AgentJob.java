@@ -1,21 +1,17 @@
 package me.yamakaja.runtimetransformer.agent;
 
-import me.yamakaja.runtimetransformer.annotation.Inject;
-import me.yamakaja.runtimetransformer.annotation.InjectionType;
-import me.yamakaja.runtimetransformer.annotation.Transform;
-import me.yamakaja.runtimetransformer.annotation.TransformByName;
+import me.yamakaja.runtimetransformer.annotation.*;
 import me.yamakaja.runtimetransformer.util.MethodUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by Yamakaja on 19.05.17.
@@ -27,9 +23,11 @@ public class AgentJob {
     private Class<?> toTransform;
     private Class<?>[] interfaces;
 
+    private Map<String, SpecialInvocation> specialInvocations = new HashMap<>();
+
     public AgentJob(Class<?> transformer) {
         this.transformer = transformer;
-        interfaces = transformer.getInterfaces();
+        this.interfaces = transformer.getInterfaces();
 
         this.readTransformationTarget(transformer);
 
@@ -39,14 +37,17 @@ public class AgentJob {
         try {
             transformerReader = new ClassReader(transformer.getResource(transformer.getSimpleName() + ".class").openStream());
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load class file of " + toTransform.getSimpleName(), e);
+            throw new RuntimeException("Failed to load class file of " + this.toTransform.getSimpleName(), e);
         }
 
         transformerReader.accept(transformerNode, 0);
+        Map<String, ClassNode> innerClasses = readInnerClasses(transformerNode);
 
         Method[] methods = transformer.getDeclaredMethods();
 
-        methodJobs = new ArrayList<>(methods.length);
+        this.findSpecialInvocations(methods);
+
+        this.methodJobs = new ArrayList<>(methods.length);
 
         Arrays.stream(methods).filter(method -> method.isAnnotationPresent(Inject.class))
                 .forEach(method -> {
@@ -54,17 +55,47 @@ public class AgentJob {
                     InjectionType type = method.getAnnotation(Inject.class).value();
 
                     Optional<MethodNode> transformerMethodNode = ((List<MethodNode>) transformerNode.methods).stream()
-                            .filter(node -> node != null && method.getName().equals(node.name) && MethodUtils.getSignature(method).equals(node.desc)).findAny();
+                            .filter(node -> node != null && method.getName().equals(node.name) && MethodUtils.getSignature(method).equals(node.desc))
+                            .findAny();
 
                     if (!transformerMethodNode.isPresent())
                         throw new RuntimeException("Transformer method node not found! (WTF?)");
 
-                    methodJobs.add(new MethodJob(type, toTransform.getName().replace('.', '/'),
+                    this.methodJobs.add(new MethodJob(type, this.toTransform.getName().replace('.', '/'),
+                            this.toTransform,
                             transformer.getName().replace('.', '/'),
-                            toTransform.getSuperclass().getName().replace('.', '/'),
-                            transformerMethodNode.get()));
+                            this.toTransform.getSuperclass().getName().replace('.', '/'),
+                            transformerMethodNode.get(), this.specialInvocations, innerClasses));
 
                 });
+    }
+
+    private Map<String, ClassNode> readInnerClasses(ClassNode classNode) {
+        Map<String, ClassNode> ret = new HashMap<>();
+        ((List<InnerClassNode>) classNode.innerClasses).stream()
+                .filter(node -> node.name.matches(".*\\$[0-9]+"))
+                .filter(node -> node.innerName == null && node.outerName == null)
+                .map(node -> {
+                    ClassNode innerClassNode = new ClassNode(Opcodes.ASM5);
+
+                    try (InputStream inputStream = this.transformer.getResourceAsStream(node.name.substring(node.name.lastIndexOf('/') + 1) + ".class")) {
+                        ClassReader reader = new ClassReader(inputStream);
+
+                        reader.accept(innerClassNode, 0);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    return innerClassNode;
+                }).forEach(node -> ret.put(node.name, node));
+        return ret;
+    }
+
+    private void findSpecialInvocations(Method[] methods) {
+        Arrays.stream(methods)
+                .filter(method -> method.isAnnotationPresent(CallParameters.class))
+                .forEach(method -> this.specialInvocations.put(method.getName().replace('.', '/'),
+                        new SpecialInvocation(method)));
     }
 
     private void readTransformationTarget(Class<?> transformer) {
@@ -101,8 +132,7 @@ public class AgentJob {
     }
 
     public void apply(ClassNode node) {
-        for (MethodJob methodJob : methodJobs) {
+        for (MethodJob methodJob : methodJobs)
             methodJob.apply(node);
-        }
     }
 }

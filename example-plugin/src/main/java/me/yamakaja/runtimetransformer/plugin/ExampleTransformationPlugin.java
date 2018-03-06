@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,7 +31,11 @@ public class ExampleTransformationPlugin extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Bukkit.broadcastMessage(((SkullMeta) ((Player) sender).getInventory().getItemInMainHand().getItemMeta()).getOwner());
+        ItemStack stack = ((Player) sender).getInventory().getItemInMainHand();
+        SkullMeta itemMeta = (SkullMeta) stack.getItemMeta();
+        itemMeta.setOwner("Yamakaja");
+        stack.setItemMeta(itemMeta);
+        ((Player) sender).getInventory().setItemInMainHand(stack);
         return true;
     }
 }

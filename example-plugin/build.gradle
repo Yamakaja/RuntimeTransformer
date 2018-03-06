@@ -11,3 +11,11 @@ jar {
         }
     }
 }
+
+task install(type: Copy) {
+    from("$rootDir/example-plugin/build/libs/") {
+        include "*.jar"
+    }
+
+    into "$rootDir/testenv/plugins/"
+}
