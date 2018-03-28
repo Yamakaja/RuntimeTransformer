@@ -11,19 +11,22 @@ import java.net.URLClassLoader;
 public class RuntimeTransformer {
 
     public RuntimeTransformer(Class<?>... transformers) {
-        URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+        ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+        if (systemClassLoader instanceof URLClassLoader) {
+            URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 
-        try {
-            Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-            method.setAccessible(true);
+            try {
+                Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+                method.setAccessible(true);
 
-            File file = new File(new File(System.getProperty("java.home")).getParent(), "lib/tools.jar");
-            if (!file.exists())
-                throw new RuntimeException("Not running with JDK!");
+                File file = new File(new File(System.getProperty("java.home")).getParent(), "lib/tools.jar");
+                if (!file.exists())
+                    throw new RuntimeException("Not running with JDK!");
 
-            method.invoke(urlClassLoader, file.toURI().toURL());
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
+                method.invoke(urlClassLoader, file.toURI().toURL());
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
         }
 
         TransformerUtils.attachAgent(TransformerUtils.saveAgentJar(), transformers);

@@ -51,6 +51,9 @@ And that's pretty much it, now we just need to create our runtime transformer:
 new RuntimeTransformer( EntityLivingTransformer.class );
 ```
 
+For Java 9+ runtimes, you have to allow self attaching by adding this startup `-Djdk.attach.allowAttachSelf=true`
+parameter or creating the `RuntimeTransformer` instance in a separate process.
+
 And we're done.
 
 You can find more examples in the example plugin.
