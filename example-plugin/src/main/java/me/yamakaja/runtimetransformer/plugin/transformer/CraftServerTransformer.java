@@ -4,7 +4,7 @@ import me.yamakaja.runtimetransformer.annotation.Inject;
 import me.yamakaja.runtimetransformer.annotation.InjectionType;
 import me.yamakaja.runtimetransformer.annotation.Transform;
 
-import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_15_R1.CraftServer;
 
 /**
  * Created by Yamakaja on 20.05.17.
